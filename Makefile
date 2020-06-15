@@ -4,7 +4,7 @@ include scripts/Freedom.mk
 # Include version identifiers to build up the full version string
 include Version.mk
 PACKAGE_HEADING := freedom-spike-dasm
-PACKAGE_VERSION := $(RISCV_ISA_SIM_VERSION)-$(FREEDOM_SPIKE_DASM_ID)
+PACKAGE_VERSION := $(RISCV_ISA_SIM_VERSION)-$(FREEDOM_SPIKE_DASM_ID)$(EXTRA_SUFFIX)
 
 # Source code directory references
 SRCNAME_ISA_SIM := riscv-isa-sim
@@ -19,7 +19,11 @@ include scripts/Package.mk
 
 $(OBJDIR)/%/build/$(PACKAGE_HEADING)/install.stamp: \
 		$(OBJDIR)/%/build/$(PACKAGE_HEADING)/$(SRCNAME_ISA_SIM)/build.stamp
+	$(eval $@_TARGET := $(patsubst $(OBJDIR)/%/build/$(PACKAGE_HEADING)/install.stamp,%,$@))
+	$(eval $@_INSTALL := $(patsubst %/build/$(PACKAGE_HEADING)/install.stamp,%/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET),$@))
 	mkdir -p $(dir $@)
+	git log > $(abspath $($@_INSTALL))/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).commitlog
+	cp README.md $(abspath $($@_INSTALL))/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).readme.md
 	date > $@
 
 # We might need some extra target libraries for this package
@@ -64,4 +68,12 @@ $(OBJDIR)/%/build/$(PACKAGE_HEADING)/$(SRCNAME_ISA_SIM)/build.stamp: \
 			SOURCE_PATH=$(abspath $(dir $@)) \
 			INSTALL_PATH=$(abspath $($@_INSTALL)) \
 			$($($@_TARGET)-sdasm-configure) &>$($@_REC)/$(SRCNAME_ISA_SIM)-make-install.log
+	date > $@
+
+$(OBJDIR)/$(NATIVE)/test/$(PACKAGE_HEADING)/test.stamp: \
+		$(OBJDIR)/$(NATIVE)/test/$(PACKAGE_HEADING)/launch.stamp
+	mkdir -p $(dir $@)
+#	PATH=$(abspath $(OBJDIR)/$(NATIVE)/launch/$(PACKAGE_TARNAME)/bin):$(PATH) zspike-dasm -h
+	@echo "zspike-dasm executable cannot be run with a -v option without failing!"
+	@echo "Finished testing $(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE).tar.gz tarball"
 	date > $@
