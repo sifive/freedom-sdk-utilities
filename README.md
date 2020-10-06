@@ -1,4 +1,4 @@
-SiFive Freedom Spike Disassembler
+SiFive Freedom SDK Utilities (zspike-dasm, dtc and libfdt)
 --------
 
 At SiFive we've been distributing binary release packages of the
@@ -12,8 +12,8 @@ To be written!
 
 ### To build the tools:
 
-    $ git clone git@github.com:sifive/freedom-spike-dasm.git
-    $ cd freedom-spike-dasm
+    $ git clone git@github.com:sifive/freedom-sdk-utilities.git
+    $ cd freedom-sdk-utilities
     $ git submodule update --init --recursive
     $ make package
 

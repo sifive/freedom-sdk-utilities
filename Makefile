@@ -4,7 +4,7 @@ include scripts/Freedom.mk
 # Include version identifiers to build up the full version string
 include Version.mk
 PACKAGE_HEADING := sdk-utilities
-PACKAGE_VERSION := $(RISCV_ISA_SIM_VERSION)-$(FREEDOM_SPIKE_DASM_ID)$(EXTRA_SUFFIX)
+PACKAGE_VERSION := $(RISCV_ISA_SIM_VERSION)-$(FREEDOM_SDK_UTILITIES_ID)$(EXTRA_SUFFIX)
 
 # Source code directory references
 SRCNAME_ISA_SIM := riscv-isa-sim
