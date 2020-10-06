@@ -16,11 +16,11 @@ INSTALL_PATH ?=./install
 
 # which source files to use for compiling spike-dasm
 SOURCE_FILES = \
-		$(SOURCE_PATH)/fesvr/option_parser.cc \
-		$(SOURCE_PATH)/riscv/regnames.cc \
 		$(SOURCE_PATH)/riscv/extensions.cc \
-		$(SOURCE_PATH)/spike_main/disasm.cc \
-		$(SOURCE_PATH)/spike_main/spike-dasm.cc
+		$(SOURCE_PATH)/disasm/regnames.cc \
+		$(SOURCE_PATH)/disasm/disasm.cc \
+		$(SOURCE_PATH)/spike_dasm/spike_dasm_option_parser.cc \
+		$(SOURCE_PATH)/spike_dasm/spike-dasm.cc
 
 # which include paths to use for compiling spike-dasm
 INCLUDE_PATHS = \
