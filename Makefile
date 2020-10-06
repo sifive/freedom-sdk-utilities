@@ -11,6 +11,7 @@ SRCNAME_ISA_SIM := riscv-isa-sim
 SRCPATH_ISA_SIM := $(SRCDIR)/$(SRCNAME_ISA_SIM)
 
 # Some special package configure flags for specific targets
+$(WIN64)-dtc-configure   := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CC=gcc
 $(WIN64)-sdasm-configure := HOST_PREFIX=x86_64-w64-mingw32- EXEC_SUFFIX=.exe
 
 # Setup the package targets and switch into secondary makefile targets
@@ -49,6 +50,12 @@ $(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp:
 	mkdir -p $($@_REC)
 	rm -rf $(dir $@)
 	mkdir -p $(dir $@)
+	cd $($@_REC); curl -L -f -s -o dtc-1.5.0.tar.gz https://github.com/dgibson/dtc/archive/v1.5.0.tar.gz
+	cd $(dir $@); $(TAR) -xf $($@_REC)/dtc-1.5.0.tar.gz
+	cd $(dir $@); mv dtc-1.5.0 dtc
+	rm -rf $(dir $@)/dtc/Makefile
+	cp -a $(PATCHESDIR)/dtc.mk $(dir $@)/dtc/Makefile
+	$(SED) -i -f $(PATCHESDIR)/dtc-fstree.sed $(dir $@)/dtc/fstree.c
 	cp -a $(SRCPATH_ISA_SIM) $(dir $@)
 	rm -rf $(dir $@)/$(SRCNAME_ISA_SIM)/Makefile
 	cp $(PATCHESDIR)/spike-dasm.mk $(dir $@)/$(SRCNAME_ISA_SIM)/Makefile
@@ -60,7 +67,24 @@ $(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp:
 	cp $(PATCHESDIR)/spike-dasm-extensions.cc $(dir $@)/$(SRCNAME_ISA_SIM)/riscv/extensions.cc
 	date > $@
 
+$(OBJDIR)/%/build/$(PACKAGE_HEADING)/dtc/build.stamp: \
+		$(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp
+	$(eval $@_TARGET := $(patsubst $(OBJDIR)/%/build/$(PACKAGE_HEADING)/dtc/build.stamp,%,$@))
+	$(eval $@_INSTALL := $(patsubst %/build/$(PACKAGE_HEADING)/dtc/build.stamp,%/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET),$@))
+	$(MAKE) -j1 -C $(dir $@) install PREFIX=$(abspath $($@_INSTALL)) $($($@_TARGET)-dtc-configure) \
+		NO_PYTHON=1 NO_YAML=1 NO_VALGRIND=1 &>$(dir $@)/make-install.log
+	rm -f $(abspath $($@_INSTALL))/lib/lib*.dylib*
+	rm -f $(abspath $($@_INSTALL))/lib/lib*.so*
+	rm -f $(abspath $($@_INSTALL))/lib64/lib*.so*
+	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/bin/dtc
+	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/bin/fdtdump
+	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/bin/fdtget
+	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/bin/fdtoverlay
+	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/bin/fdtput
+	date > $@
+
 $(OBJDIR)/%/build/$(PACKAGE_HEADING)/$(SRCNAME_ISA_SIM)/build.stamp: \
+		$(OBJDIR)/%/build/$(PACKAGE_HEADING)/dtc/build.stamp \
 		$(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp
 	$(eval $@_TARGET := $(patsubst $(OBJDIR)/%/build/$(PACKAGE_HEADING)/$(SRCNAME_ISA_SIM)/build.stamp,%,$@))
 	$(eval $@_INSTALL := $(patsubst %/build/$(PACKAGE_HEADING)/$(SRCNAME_ISA_SIM)/build.stamp,%/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET),$@))
