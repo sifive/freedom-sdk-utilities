@@ -32,7 +32,7 @@ $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).src.zip: \
 		$(OBJDIR)/$(WIN64)/build/$(PACKAGE_HEADING)/libs.stamp \
 		$(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).src.tar.gz
 	mkdir -p $(dir $@)
-	cd $(abspath $(PREFIXPATH).); zip -x "/bin/*" "/obj/*" -rq $(abspath $@) .git* *
+	cd $(abspath $(PREFIXPATH).); zip -x "/bin/*" "/obj/*" -rq $(abspath $@) *
 	rm -rf $(RECDIR)-$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)
 
 $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).tar.gz: \
@@ -48,7 +48,7 @@ $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).src.tar.gz: \
 	mkdir -p $(dir $@)
 	rm -rf $(RECDIR)-$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)
 	cp -a $(OBJ_WIN64)/rec/$(PACKAGE_HEADING) $(RECDIR)-$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)
-	$(TAR) --dereference --hard-dereference -C $(abspath $(PREFIXPATH).) --exclude bin --exclude obj -c .git* * | gzip > $(abspath $@)
+	$(TAR) --dereference --hard-dereference -C $(abspath $(PREFIXPATH).) --exclude bin --exclude obj -c * | gzip > $(abspath $@)
 
 $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE).tar.gz: \
 		$(OBJDIR)/$(NATIVE)/build/$(PACKAGE_HEADING)/install.stamp
@@ -61,7 +61,7 @@ $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE).src.tar.gz: \
 	mkdir -p $(dir $@)
 	rm -rf $(RECDIR)-$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE)
 	cp -a $(OBJ_NATIVE)/rec/$(PACKAGE_HEADING) $(RECDIR)-$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE)
-	$(TAR) --dereference --hard-dereference -C $(abspath $(PREFIXPATH).) --exclude bin --exclude obj -c .git* * | gzip > $(abspath $@)
+	$(TAR) --dereference --hard-dereference -C $(abspath $(PREFIXPATH).) --exclude bin --exclude obj -c * | gzip > $(abspath $@)
 	rm -rf $(RECDIR)-$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE)
 
 # Installs native package.
