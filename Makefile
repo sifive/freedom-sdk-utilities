@@ -62,6 +62,8 @@ $(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp:
 	rm -rf $(dir $@)
 	mkdir -p $(dir $@)
 	git log > $($@_REC)/$(PACKAGE_HEADING)-git-commit.log
+	cp .gitmodules $($@_REC)/$(PACKAGE_HEADING)-git-modules.log
+	git remote -v > $($@_REC)/$(PACKAGE_HEADING)-git-remote.log
 	git submodule status > $($@_REC)/$(PACKAGE_HEADING)-git-submodule.log
 	cd $($@_REC); curl -L -f -s -o dtc-1.5.0.tar.gz https://github.com/dgibson/dtc/archive/v1.5.0.tar.gz
 	cd $(dir $@); $(TAR) -xf $($@_REC)/dtc-1.5.0.tar.gz
