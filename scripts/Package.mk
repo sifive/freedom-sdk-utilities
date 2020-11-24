@@ -40,6 +40,7 @@ $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).tar.gz: \
 		$(OBJDIR)/$(WIN64)/build/$(PACKAGE_HEADING)/libs.stamp
 	mkdir -p $(dir $@)
 	$(TAR) --dereference --hard-dereference -C $(OBJDIR)/$(WIN64)/install -c $(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64) | gzip > $(abspath $@)
+	cp -a $(OBJDIR)/$(WIN64)/build/$(PACKAGE_HEADING)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).bundle $(dir $@)
 
 $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).src.tar.gz: \
 		$(OBJDIR)/$(WIN64)/build/$(PACKAGE_HEADING)/install.stamp \
@@ -53,6 +54,7 @@ $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE).tar.gz: \
 		$(OBJDIR)/$(NATIVE)/build/$(PACKAGE_HEADING)/install.stamp
 	mkdir -p $(dir $@)
 	$(TAR) --dereference --hard-dereference -C $(OBJDIR)/$(NATIVE)/install -c $(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE) | gzip > $(abspath $@)
+	cp -a $(OBJDIR)/$(NATIVE)/build/$(PACKAGE_HEADING)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE).bundle $(dir $@)
 
 $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE).src.tar.gz: \
 		$(OBJDIR)/$(NATIVE)/build/$(PACKAGE_HEADING)/install.stamp
@@ -92,6 +94,7 @@ cleanup:
 	rm -rf $(RECDIR)-$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE)
 	rm -rf $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE).tar.gz
 	rm -rf $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE).src.tar.gz
+	rm -rf $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE).bundle
 	rm -rf $(OBJ_WIN64)/rec/$(PACKAGE_HEADING)
 	rm -rf $(OBJ_WIN64)/test/$(PACKAGE_HEADING)
 	rm -rf $(OBJ_WIN64)/build/$(PACKAGE_HEADING)
@@ -102,6 +105,7 @@ cleanup:
 	rm -rf $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).src.zip
 	rm -rf $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).tar.gz
 	rm -rf $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).src.tar.gz
+	rm -rf $(BINDIR)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64).bundle
 
 .PHONY: flushup
 flushup:

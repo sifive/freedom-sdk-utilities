@@ -3,6 +3,7 @@ include scripts/Freedom.mk
 
 # Include version identifiers to build up the full version string
 include Version.mk
+PACKAGE_WORDING := SDK Utilities
 PACKAGE_HEADING := sdk-utilities
 PACKAGE_VERSION := $(RISCV_ISA_SIM_VERSION)-$(FREEDOM_SDK_UTILITIES_ID)$(EXTRA_SUFFIX)
 
@@ -23,8 +24,17 @@ $(OBJDIR)/%/build/$(PACKAGE_HEADING)/install.stamp: \
 	$(eval $@_TARGET := $(patsubst $(OBJDIR)/%/build/$(PACKAGE_HEADING)/install.stamp,%,$@))
 	$(eval $@_INSTALL := $(patsubst %/build/$(PACKAGE_HEADING)/install.stamp,%/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET),$@))
 	mkdir -p $(dir $@)
-	git log > $(abspath $($@_INSTALL))/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).commitlog
+	mkdir -p $(dir $@)/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).bundle/features
+	git log --format="[%ad] %s" > $(abspath $($@_INSTALL))/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).changelog
 	cp README.md $(abspath $($@_INSTALL))/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).readme.md
+	tclsh scripts/generate-feature-xml.tcl "$(PACKAGE_WORDING)" "$(PACKAGE_HEADING)" "$(RISCV_ISA_SIM_VERSION)" "$(FREEDOM_SDK_UTILITIES_ID)" $($@_TARGET) $(abspath $($@_INSTALL))
+	tclsh scripts/generate-chmod755-sh.tcl $(abspath $($@_INSTALL))
+	tclsh scripts/generate-site-xml.tcl "$(PACKAGE_WORDING)" "$(PACKAGE_HEADING)" "$(RISCV_ISA_SIM_VERSION)" "$(FREEDOM_SDK_UTILITIES_ID)" $($@_TARGET) $(abspath $(dir $@))/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).bundle
+	tclsh scripts/generate-bundle-mk.tcl $(abspath $($@_INSTALL)) RISCV_TAGS "$(FREEDOM_SDK_UTILITIES_RISCV_TAGS)" TOOLS_TAGS "$(FREEDOM_SDK_UTILITIES_TOOLS_TAGS)"
+	cp $(abspath $($@_INSTALL))/bundle.mk $(abspath $(dir $@))/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).bundle
+	cd $($@_INSTALL); zip -rq $(abspath $(dir $@))/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).bundle/features/$(PACKAGE_HEADING)_$(FREEDOM_SDK_UTILITIES_ID)_$(RISCV_ISA_SIM_VERSION).jar *
+	tclsh scripts/check-maximum-path-length.tcl $(abspath $($@_INSTALL)) "$(PACKAGE_HEADING)" "$(RISCV_ISA_SIM_VERSION)" "$(FREEDOM_SDK_UTILITIES_ID)"
+	tclsh scripts/check-same-name-different-case.tcl $(abspath $($@_INSTALL))
 	date > $@
 
 # We might need some extra target libraries for this package
@@ -44,6 +54,7 @@ $(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp:
 	$(eval $@_TARGET := $(patsubst $(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp,%,$@))
 	$(eval $@_INSTALL := $(patsubst %/build/$(PACKAGE_HEADING)/source.stamp,%/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET),$@))
 	$(eval $@_REC := $(abspath $(patsubst %/build/$(PACKAGE_HEADING)/source.stamp,%/rec/$(PACKAGE_HEADING),$@)))
+	tclsh scripts/check-naming-and-version-syntax.tcl "$(PACKAGE_WORDING)" "$(PACKAGE_HEADING)" "$(RISCV_ISA_SIM_VERSION)" "$(FREEDOM_SDK_UTILITIES_ID)"
 	rm -rf $($@_INSTALL)
 	mkdir -p $($@_INSTALL)
 	rm -rf $($@_REC)
@@ -71,8 +82,9 @@ $(OBJDIR)/%/build/$(PACKAGE_HEADING)/dtc/build.stamp: \
 		$(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp
 	$(eval $@_TARGET := $(patsubst $(OBJDIR)/%/build/$(PACKAGE_HEADING)/dtc/build.stamp,%,$@))
 	$(eval $@_INSTALL := $(patsubst %/build/$(PACKAGE_HEADING)/dtc/build.stamp,%/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET),$@))
+	$(eval $@_REC := $(abspath $(patsubst %/build/$(PACKAGE_HEADING)/dtc/build.stamp,%/rec/$(PACKAGE_HEADING),$@)))
 	$(MAKE) -j1 -C $(dir $@) install PREFIX=$(abspath $($@_INSTALL)) $($($@_TARGET)-dtc-configure) \
-		NO_PYTHON=1 NO_YAML=1 NO_VALGRIND=1 &>$(dir $@)/make-install.log
+		NO_PYTHON=1 NO_YAML=1 NO_VALGRIND=1 &>$($@_REC)/dtc-make-install.log
 	rm -f $(abspath $($@_INSTALL))/lib/lib*.dylib*
 	rm -f $(abspath $($@_INSTALL))/lib/lib*.so*
 	rm -f $(abspath $($@_INSTALL))/lib64/lib*.so*
