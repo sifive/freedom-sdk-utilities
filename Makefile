@@ -82,21 +82,33 @@ $(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp:
 	cp $(PATCHESDIR)/spike-dasm-extensions.cc $(dir $@)/$(SRCNAME_ISA_SIM)/riscv/extensions.cc
 	date > $@
 
-$(OBJDIR)/%/build/$(PACKAGE_HEADING)/dtc/build.stamp: \
-		$(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp
-	$(eval $@_TARGET := $(patsubst $(OBJDIR)/%/build/$(PACKAGE_HEADING)/dtc/build.stamp,%,$@))
-	$(eval $@_INSTALL := $(patsubst %/build/$(PACKAGE_HEADING)/dtc/build.stamp,%/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET),$@))
-	$(eval $@_REC := $(abspath $(patsubst %/build/$(PACKAGE_HEADING)/dtc/build.stamp,%/rec/$(PACKAGE_HEADING),$@)))
-	$(MAKE) -j1 -C $(dir $@) install PREFIX=$(abspath $($@_INSTALL)) $($($@_TARGET)-dtc-configure) \
-		NO_PYTHON=1 NO_YAML=1 NO_VALGRIND=1 &>$($@_REC)/dtc-make-install.log
-	rm -f $(abspath $($@_INSTALL))/lib/lib*.dylib*
-	rm -f $(abspath $($@_INSTALL))/lib/lib*.so*
-	rm -f $(abspath $($@_INSTALL))/lib64/lib*.so*
-	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/bin/dtc
-	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/bin/fdtdump
-	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/bin/fdtget
-	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/bin/fdtoverlay
-	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/bin/fdtput
+$(OBJ_NATIVE)/build/$(PACKAGE_HEADING)/dtc/build.stamp: \
+		$(OBJ_NATIVE)/build/$(PACKAGE_HEADING)/source.stamp
+	$(MAKE) -j1 -C $(dir $@) install PREFIX=$(abspath $(OBJ_NATIVE)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE)) \
+		$($(NATIVE)-dtc-configure) NO_PYTHON=1 NO_YAML=1 NO_VALGRIND=1 &>$(OBJ_NATIVE)/rec/$(PACKAGE_HEADING)/dtc-make-install.log
+	rm -f $(abspath $(OBJ_NATIVE)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE))/lib/lib*.dylib*
+	rm -f $(abspath $(OBJ_NATIVE)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE))/lib/lib*.so*
+	rm -f $(abspath $(OBJ_NATIVE)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE))/lib64/lib*.so*
+	tclsh scripts/dyn-lib-check-$(NATIVE).tcl $(abspath $(OBJ_NATIVE)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE))/bin/dtc
+	tclsh scripts/dyn-lib-check-$(NATIVE).tcl $(abspath $(OBJ_NATIVE)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE))/bin/fdtdump
+	tclsh scripts/dyn-lib-check-$(NATIVE).tcl $(abspath $(OBJ_NATIVE)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE))/bin/fdtget
+	tclsh scripts/dyn-lib-check-$(NATIVE).tcl $(abspath $(OBJ_NATIVE)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE))/bin/fdtoverlay
+	tclsh scripts/dyn-lib-check-$(NATIVE).tcl $(abspath $(OBJ_NATIVE)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(NATIVE))/bin/fdtput
+	date > $@
+
+$(OBJ_WIN64)/build/$(PACKAGE_HEADING)/dtc/build.stamp: \
+		$(OBJ_WIN64)/build/$(PACKAGE_HEADING)/source.stamp
+	$(SED) -i -f $(PATCHESDIR)/dtc-lexer.sed $(dir $@)/dtc-lexer.l
+	$(MAKE) -j1 -C $(dir $@) install PREFIX=$(abspath $(OBJ_WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)) \
+		$($(WIN64)-dtc-configure) NO_PYTHON=1 NO_YAML=1 NO_VALGRIND=1 &>$(OBJ_WIN64)/rec/$(PACKAGE_HEADING)/dtc-make-install.log
+	rm -f $(abspath $(OBJ_WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64))/lib/lib*.dylib*
+	rm -f $(abspath $(OBJ_WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64))/lib/lib*.so*
+	rm -f $(abspath $(OBJ_WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64))/lib64/lib*.so*
+	tclsh scripts/dyn-lib-check-$(WIN64).tcl $(abspath $(OBJ_WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64))/bin/dtc
+	tclsh scripts/dyn-lib-check-$(WIN64).tcl $(abspath $(OBJ_WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64))/bin/fdtdump
+	tclsh scripts/dyn-lib-check-$(WIN64).tcl $(abspath $(OBJ_WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64))/bin/fdtget
+	tclsh scripts/dyn-lib-check-$(WIN64).tcl $(abspath $(OBJ_WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64))/bin/fdtoverlay
+	tclsh scripts/dyn-lib-check-$(WIN64).tcl $(abspath $(OBJ_WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64))/bin/fdtput
 	date > $@
 
 $(OBJDIR)/%/build/$(PACKAGE_HEADING)/$(SRCNAME_ISA_SIM)/build.stamp: \
