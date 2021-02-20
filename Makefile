@@ -6,6 +6,7 @@ include Version.mk
 PACKAGE_WORDING := SDK Utilities
 PACKAGE_HEADING := sdk-utilities
 PACKAGE_VERSION := $(RISCV_ISA_SIM_VERSION)-$(FREEDOM_SDK_UTILITIES_ID)$(EXTRA_SUFFIX)
+PACKAGE_COMMENT := \# SiFive Freedom Package Properties File
 
 # Source code directory references
 SRCNAME_ISA_SIM := riscv-isa-sim
@@ -27,7 +28,7 @@ $(OBJDIR)/%/build/$(PACKAGE_HEADING)/install.stamp: \
 	git log --format="[%ad] %s" > $(abspath $($@_INSTALL))/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).changelog
 	cp README.md $(abspath $($@_INSTALL))/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET).readme.md
 	rm -f $(abspath $($@_PROPERTIES))
-	echo "# SiFive Freedom Package Properties File" > $(abspath $($@_PROPERTIES))
+	echo "$(PACKAGE_COMMENT)" > $(abspath $($@_PROPERTIES))
 	echo "PACKAGE_TYPE = freedom-tools" >> $(abspath $($@_PROPERTIES))
 	echo "PACKAGE_DESC_SEG = $(PACKAGE_WORDING)" >> $(abspath $($@_PROPERTIES))
 	echo "PACKAGE_FIXED_ID = $(PACKAGE_HEADING)" >> $(abspath $($@_PROPERTIES))
