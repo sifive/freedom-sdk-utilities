@@ -11,9 +11,12 @@ PACKAGE_COMMENT := \# SiFive Freedom Package Properties File
 # Source code directory references
 SRCNAME_ISA_SIM := riscv-isa-sim
 SRCPATH_ISA_SIM := src/$(SRCNAME_ISA_SIM)
+SRCNAME_ELF2HEX := freedom-elf2hex
+SRCPATH_ELF2HEX := src/$(SRCNAME_ELF2HEX)
 
 # Some special package configure flags for specific targets
 $(WIN64)-dtc-configure   := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CC=gcc
+$(WIN64)-fe2h-configure  := HOST_PREFIX=x86_64-w64-mingw32- EXEC_SUFFIX=.exe
 $(WIN64)-sdasm-configure := HOST_PREFIX=x86_64-w64-mingw32- EXEC_SUFFIX=.exe
 
 # Setup the package targets and switch into secondary makefile targets
@@ -79,7 +82,7 @@ $(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp:
 	rm -rf $(dir $@)/dtc/Makefile
 	cp -a patches/dtc.mk $(dir $@)/dtc/Makefile
 	$(SED) -i -f patches/dtc-fstree.sed $(dir $@)/dtc/fstree.c
-	cp -a $(SRCPATH_ISA_SIM) $(dir $@)
+	cp -a $(SRCPATH_ELF2HEX) $(SRCPATH_ISA_SIM) $(dir $@)
 	rm -rf $(dir $@)/$(SRCNAME_ISA_SIM)/Makefile
 	cp patches/spike-dasm.mk $(dir $@)/$(SRCNAME_ISA_SIM)/Makefile
 	rm -rf $(dir $@)/$(SRCNAME_ISA_SIM)/config.h
@@ -119,8 +122,19 @@ $(OBJ_WIN64)/build/$(PACKAGE_HEADING)/dtc/build.stamp: \
 	tclsh scripts/dyn-lib-check-$(WIN64).tcl $(abspath $(OBJ_WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64))/bin/fdtput
 	date > $@
 
+$(OBJDIR)/%/build/$(PACKAGE_HEADING)/$(SRCNAME_ELF2HEX)/build.stamp: \
+		$(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp
+	$(eval $@_TARGET := $(patsubst $(OBJDIR)/%/build/$(PACKAGE_HEADING)/$(SRCNAME_ELF2HEX)/build.stamp,%,$@))
+	$(eval $@_INSTALL := $(patsubst %/build/$(PACKAGE_HEADING)/$(SRCNAME_ELF2HEX)/build.stamp,%/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET),$@))
+	$(eval $@_BUILDLOG := $(abspath $(patsubst %/build/$(PACKAGE_HEADING)/$(SRCNAME_ELF2HEX)/build.stamp,%/buildlog/$(PACKAGE_HEADING),$@)))
+	$(MAKE) -C $(dir $@) -j1 install INSTALL_PATH=$(abspath $($@_INSTALL)) \
+		$($($@_TARGET)-fe2h-configure) &>$($@_BUILDLOG)/$(SRCNAME_ELF2HEX)-make-install.log
+	tclsh scripts/dyn-lib-check-$($@_TARGET).tcl $(abspath $($@_INSTALL))/util/freedom-bin2hex
+	date > $@
+
 $(OBJDIR)/%/build/$(PACKAGE_HEADING)/$(SRCNAME_ISA_SIM)/build.stamp: \
 		$(OBJDIR)/%/build/$(PACKAGE_HEADING)/dtc/build.stamp \
+		$(OBJDIR)/%/build/$(PACKAGE_HEADING)/$(SRCNAME_ELF2HEX)/build.stamp \
 		$(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp
 	$(eval $@_TARGET := $(patsubst $(OBJDIR)/%/build/$(PACKAGE_HEADING)/$(SRCNAME_ISA_SIM)/build.stamp,%,$@))
 	$(eval $@_INSTALL := $(patsubst %/build/$(PACKAGE_HEADING)/$(SRCNAME_ISA_SIM)/build.stamp,%/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$($@_TARGET),$@))
