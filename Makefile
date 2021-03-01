@@ -15,9 +15,9 @@ SRCNAME_ELF2HEX := freedom-elf2hex
 SRCPATH_ELF2HEX := src/$(SRCNAME_ELF2HEX)
 
 # Some special package configure flags for specific targets
-$(WIN64)-dtc-configure   := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CC=gcc
-$(WIN64)-fe2h-configure  := HOST_PREFIX=x86_64-w64-mingw32- EXEC_SUFFIX=.exe
-$(WIN64)-sdasm-configure := HOST_PREFIX=x86_64-w64-mingw32- EXEC_SUFFIX=.exe
+$(WIN64)-dtc-configure   := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CC=gcc-posix
+$(WIN64)-fe2h-configure  := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CC=gcc-posix
+$(WIN64)-sdasm-configure := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CXX=g++-posix
 
 # Setup the package targets and switch into secondary makefile targets
 # Targets $(PACKAGE_HEADING)/install.stamp and $(PACKAGE_HEADING)/libs.stamp

@@ -1,12 +1,15 @@
 
-# which gcc compiler to use for compiling spike-dasm
-HOST_PREFIX ?=
+# which g++ compiler to use for compiling spike-dasm
+CROSSPREFIX ?=
 
 # optional prefix for spike-asm executable
 EXEC_PREFIX ?=
 
 # optional prefix for spike-asm executable
-EXEC_SUFFIX ?=
+BINEXT ?=
+
+# which g++ compiler to use for compiling spike-dasm
+CXX ?=
 
 # where to find the source files for a spike-dasm build
 SOURCE_PATH ?=.
@@ -31,13 +34,13 @@ INCLUDE_PATHS = \
 		-I$(SOURCE_PATH)/softfloat
 
 # the full name of the spike-asm executable inluding all prefix and suffix
-EXEC_ALLFIX = $(EXEC_PREFIX)spike-dasm$(EXEC_SUFFIX)
+EXEC_ALLFIX = $(EXEC_PREFIX)spike-dasm$(BINEXT)
 
 .PHONY: all install
 all: $(EXEC_ALLFIX)
 
 $(EXEC_ALLFIX): $(SOURCE_FILES)
-	$(HOST_PREFIX)g++ -Wall -Wno-unused -std=c++11 $(INCLUDE_PATHS) -o $@ $(SOURCE_FILES)
+	$(CROSSPREFIX)$(CXX) -Wall -Wno-unused -std=c++11 $(INCLUDE_PATHS) -o $@ $(SOURCE_FILES)
 
 install: $(EXEC_ALLFIX)
 	rm -rf $(INSTALL_PATH)/bin/$(EXEC_ALLFIX)
