@@ -15,9 +15,9 @@ SRCNAME_ELF2HEX := freedom-elf2hex
 SRCPATH_ELF2HEX := src/$(SRCNAME_ELF2HEX)
 
 # Some special package configure flags for specific targets
-$(WIN64)-dtc-configure   := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CC=gcc-posix
-$(WIN64)-fe2h-configure  := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CC=gcc-posix
-$(WIN64)-sdasm-configure := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CXX=g++-posix
+$(WIN64)-dtc-configure   := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CC=gcc
+$(WIN64)-fe2h-configure  := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CC=gcc
+$(WIN64)-sdasm-configure := CROSSPREFIX=x86_64-w64-mingw32- BINEXT=.exe CXX=g++
 
 # Setup the package targets and switch into secondary makefile targets
 # Targets $(PACKAGE_HEADING)/install.stamp and $(PACKAGE_HEADING)/libs.stamp
@@ -55,10 +55,10 @@ $(OBJ_NATIVE)/build/$(PACKAGE_HEADING)/libs.stamp: \
 
 $(OBJ_WIN64)/build/$(PACKAGE_HEADING)/libs.stamp: \
 		$(OBJ_WIN64)/build/$(PACKAGE_HEADING)/install.stamp
-	-$(WIN64)-gcc-posix -print-search-dirs | grep ^programs | cut -d= -f2- | tr : "\n" | xargs -I {} find {} -iname "libwinpthread*.dll" | xargs cp -t $(OBJDIR)/$(WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)/bin
-	-$(WIN64)-gcc-posix -print-search-dirs | grep ^libraries | cut -d= -f2- | tr : "\n" | xargs -I {} find {} -iname "libgcc_s_seh*.dll" | xargs cp -t $(OBJDIR)/$(WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)/bin
-	-$(WIN64)-gcc-posix -print-search-dirs | grep ^libraries | cut -d= -f2- | tr : "\n" | xargs -I {} find {} -iname "libstdc*.dll" | xargs cp -t $(OBJDIR)/$(WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)/bin
-	-$(WIN64)-gcc-posix -print-search-dirs | grep ^libraries | cut -d= -f2- | tr : "\n" | xargs -I {} find {} -iname "libssp*.dll" | xargs cp -t $(OBJDIR)/$(WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)/bin
+	-$(WIN64)-gcc -print-search-dirs | grep ^programs | cut -d= -f2- | tr : "\n" | xargs -I {} find {} -iname "libwinpthread*.dll" | xargs cp -t $(OBJDIR)/$(WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)/bin
+	-$(WIN64)-gcc -print-search-dirs | grep ^libraries | cut -d= -f2- | tr : "\n" | xargs -I {} find {} -iname "libgcc_s_seh*.dll" | xargs cp -t $(OBJDIR)/$(WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)/bin
+	-$(WIN64)-gcc -print-search-dirs | grep ^libraries | cut -d= -f2- | tr : "\n" | xargs -I {} find {} -iname "libstdc*.dll" | xargs cp -t $(OBJDIR)/$(WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)/bin
+	-$(WIN64)-gcc -print-search-dirs | grep ^libraries | cut -d= -f2- | tr : "\n" | xargs -I {} find {} -iname "libssp*.dll" | xargs cp -t $(OBJDIR)/$(WIN64)/install/$(PACKAGE_HEADING)-$(PACKAGE_VERSION)-$(WIN64)/bin
 	date > $@
 
 $(OBJDIR)/%/build/$(PACKAGE_HEADING)/source.stamp:
